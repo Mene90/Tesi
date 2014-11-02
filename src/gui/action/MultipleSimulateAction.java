@@ -105,8 +105,6 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 	public MultipleSimulateAction(Automaton automaton, Environment environment) {
 		super(automaton, environment);
 		putValue(NAME, "Multiple Run");
-        //putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_M,
-               // MAIN_MENU_MASK));
 	}
 
 	
