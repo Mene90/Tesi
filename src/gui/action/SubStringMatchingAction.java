@@ -6,149 +6,113 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import automata.fsa.dag.AbstractGraph;
+import automata.fsa.dag.AbstractGraphSimulator;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import gui.environment.Environment;
+import gui.environment.Universe;
 import automata.Automaton;
+import automata.AutomatonSimulator;
+import automata.Configuration;
+import automata.SimulatorFactory;
 
 public class SubStringMatchingAction extends SimulateAction{
 
 	public SubStringMatchingAction(Automaton automaton, Environment environment) {
 		super(automaton, environment);
-		putValue(NAME, "SubString matching..");
+		putValue(NAME, "Input");
 		putValue(ACCELERATOR_KEY, null);
 		this.environment = environment;	
 	}
 	
 	/**
-	 * Handles the input
+	 * Reports a configuration that accepted.
 	 * 
-	 * @param e
-	 *            the action event
+	 * @param configuration
+	 *            the configuration that accepted
+	 * @param component
+	 *            the parent component of dialogs brought up
+	 * @return <CODE>true</CODE> if we should continue searching, or <CODE>false</CODE>
+	 *         if we should halt
+	 */
+	protected boolean reportConfiguration(Configuration configuration,
+			Component component) {
+		JComponent past = (JComponent) gui.sim.TraceWindow
+				.getPastPane(configuration);
+		past.setPreferredSize(new java.awt.Dimension(300, 400));
+		String[] options = { "Keep looking", "I'm done" };
+		int result = JOptionPane.showOptionDialog(component, past,
+				"Accepting configuration found!", JOptionPane.YES_NO_OPTION,
+				JOptionPane.INFORMATION_MESSAGE, null, options, null);
+		return result == 0;
+	}
+
+	/**
+	 * Performs the action.
 	 */
 	public void actionPerformed(ActionEvent e) {
-		performAction((Component)e.getSource());		
-	}
+		boolean blockEdit = false;
 	
-	public void performAction(Component source){
-		if(getObject() instanceof AbstractGraph){
-			if (((Automaton)getObject()).getInitialState() == null) {
-				JOptionPane.showMessageDialog(source,
-						"Simulation requires an automaton\n"
-								+ "with an initial state!", "No Initial State",
-						JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-		}
-	}
+		if (!automatonActionPermissible((Component) e.getSource()))
+			return;
+		Object input = initialInput((Component) e.getSource(), "");
+		AbstractGraphSimulator simulator = new AbstractGraphSimulator((AbstractGraph) automaton);
 	
+		if (input == null)
+			return;
+		
+		
+		String s = (String) input;
+		Configuration config = simulator.getInitialConfigurations(s); 
+		
+		handleInteraction(automaton, simulator, config, input);
+	}
 	
 	/**
-	 * Opens pop-up GUI for taking input. Now JFLAP can take file as an input.
-	 * @param component
-	 * @param title
-	 * @return
+	 * This will search configurations for an accepting configuration.
+	 * 
+	 * @param automaton
+	 *            the automaton input is simulated on
+	 * @param abstractGraphSimulator
+	 *            the automaton simulator for this automaton
+	 * @param configs
+	 *            the initial configurations generated
+	 * @param initialInput
+	 *            the object that represents the initial input; this is a String
+	 *            object in most cases, but may differ for multiple tape turing
+	 *            machines
 	 */
-	private Object openInputGUI(final Component component, String title, final int tapes) {
-		// TODO Auto-generated method stub
-		JPanel panel;
-		JTextField[] fields;
+	public void handleInteraction(Automaton automaton,
+			AbstractGraphSimulator abstractGraphSimulator, Configuration config,
+			Object initialInput) {
 		
-		//for FA, PDA
-		if (tapes==0)
-		{
-			panel = new JPanel(new GridLayout(3, 1));
-			fields = new JTextField[1];
-			for (int i = 0; i < 1; i++) {
-				panel.add(new JLabel(title + " "));
-				panel.add(fields[i] = new JTextField());
-			}
+		JFrame frame = Universe.frameForEnvironment(environment);
+		
+		if(abstractGraphSimulator.simulate(config)){
+			JOptionPane.showMessageDialog(frame," configuration"
+										+ " accepted, and\nother possibilities are exhausted.");
+			return;
 		}
-		else
-		{
-			panel = new JPanel(new GridLayout(tapes*2+1, 2));
-			fields = new JTextField[tapes];
-			for (int i = 0; i < tapes; i++) {
-				panel.add(new JLabel(title + " "+(i+1)));
-				panel.add(fields[i] = new JTextField());
-			}
-		}
-		JButton jb=new JButton("Click to Open Input File");
-		jb.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				JFileChooser ourChooser=new JFileChooser (System.getProperties().getProperty("user.dir"));
-				int retval=ourChooser.showOpenDialog(null);
-				File f=null;
-				if (retval==JFileChooser.APPROVE_OPTION)
-				{
-					f=ourChooser.getSelectedFile();
-					try {
-						Scanner sc=new Scanner(f);
-						if (tapes!=0)
-						{
-							String[] input = new String[tapes];
-				    		for (int i = 0; i < tapes; i++)
-				    		{
-				    			if (sc.hasNext())
-				    				input[i] = sc.next();
-				    			else
-				    			{
-				    				JOptionPane.showMessageDialog(component, "Input file does not have enough input for all tapes", "File read error"
-				    						, JOptionPane.ERROR_MESSAGE);
-				    				return;
-				    			}
-				    		}
-							JOptionPane.getFrameForComponent(component).dispose();
-							handleInputFile(input);
-						}
-						else
-						{
-							String tt=sc.next();
-							JOptionPane.getFrameForComponent(component).dispose();
-							handleInputFile(tt);
-						}
-						
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generate catch block
-						e1.printStackTrace();
-					}
-					
-				}
-				
-			}
-			
-		});
-		panel.add(jb);
-		int result = JOptionPane.showOptionDialog(component, panel, title,
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-				null, null, null);
-		if (result != JOptionPane.YES_OPTION && result != JOptionPane.OK_OPTION)
-			return null;
-		if (tapes==0)
-		{
-			String input = fields[0].getText();
-			return input;
-		}
-		else
-		{
-    		String[] input = new String[tapes];
-    		for (int i = 0; i < tapes; i++)
-    			input[i] = fields[i].getText();
-    		return input;
-		}
+		
+			JOptionPane.showMessageDialog(frame, "The input was rejected.");
+			return;
+		
+		
 	}
-	
+
 	/** The environment. */
 	private Environment environment = null;
+
 }

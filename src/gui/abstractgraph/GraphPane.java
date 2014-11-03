@@ -2,6 +2,7 @@ package gui.abstractgraph;
 
 import gui.SplitPaneFactory;
 import gui.TooltipAction;
+import gui.action.SubStringMatchingAction;
 import gui.editor.ArrowNontransitionTool;
 import gui.editor.EditorPane;
 import gui.editor.ToolBox;
@@ -20,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 
+import automata.Automaton;
 import automata.fsa.FiniteStateAutomaton;
 import automata.fsa.dag.AbstractGraph;
 
@@ -41,7 +43,8 @@ public class GraphPane extends JPanel {
 	 */
 	public GraphPane(FiniteStateAutomaton dfa, Environment environment) {
 		super(new BorderLayout());
-		AbstractGraph abstractgraph = new AbstractGraph();
+		this.environment=environment;
+		abstractgraph = new AbstractGraph();
 		convert = new GraphConversionController(dfa, abstractgraph, this);
 		// Create the left view of the original DFA.
 		AutomatonPane dfaPane = new AutomatonDraggerPane(dfa);
@@ -82,12 +85,16 @@ public class GraphPane extends JPanel {
 	 */
 	private void addExtras(JToolBar toolbar) {
 		toolbar.addSeparator();
-		toolbar.add(new TooltipAction("Input",null) {
-			public void actionPerformed(ActionEvent e) {
-				//convert.complete();
-			}
-		});
+		toolbar.add(new SubStringMatchingAction(abstractgraph,environment));
 	}
+	
+	/** */
+	
+	private AbstractGraph abstractgraph;
+	
+	/** */
+	
+	private Environment environment;
 
 	/** The controller object. */
 	private GraphConversionController convert;

@@ -167,54 +167,7 @@ public class SimulateAction extends AutomatonAction {
 				panel.add(fields[i] = new JTextField());
 			}
 		}
-		JButton jb=new JButton("Click to Open Input File");
-		jb.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				JFileChooser ourChooser=new JFileChooser (System.getProperties().getProperty("user.dir"));
-				int retval=ourChooser.showOpenDialog(null);
-				File f=null;
-				if (retval==JFileChooser.APPROVE_OPTION)
-				{
-					f=ourChooser.getSelectedFile();
-					try {
-						Scanner sc=new Scanner(f);
-						if (tapes!=0)
-						{
-							String[] input = new String[tapes];
-				    		for (int i = 0; i < tapes; i++)
-				    		{
-				    			if (sc.hasNext())
-				    				input[i] = sc.next();
-				    			else
-				    			{
-				    				JOptionPane.showMessageDialog(component, "Input file does not have enough input for all tapes", "File read error"
-				    						, JOptionPane.ERROR_MESSAGE);
-				    				return;
-				    			}
-				    		}
-							JOptionPane.getFrameForComponent(component).dispose();
-							handleInputFile(input);
-						}
-						else
-						{
-							String tt=sc.next();
-							JOptionPane.getFrameForComponent(component).dispose();
-							handleInputFile(tt);
-						}
-						
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generate catch block
-						e1.printStackTrace();
-					}
-					
-				}
-				
-			}
-			
-		});
-		panel.add(jb);
+		
 		int result = JOptionPane.showOptionDialog(component, panel, title,
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 				null, null, null);
@@ -238,15 +191,7 @@ public class SimulateAction extends AutomatonAction {
 	{
 		Configuration[] configs = null;
 		AutomatonSimulator simulator = getSimulator(automaton);
-	/*	if (input instanceof InputBox)
-		{
-			InputBox tt=(InputBox) input;
-			if (getObject() instanceof TuringMachine)
-				tt.addSimulator(automaton, simulator, true);
-			else
-				tt.addSimulator(automaton, simulator, false);
-			return;
-		}*/
+
 		if (input == null)
 			return;
 		
@@ -336,7 +281,7 @@ public class SimulateAction extends AutomatonAction {
 	}
 
 	/** The automaton this simulate action runs simulations on! */
-	private Automaton automaton;
+	protected Automaton automaton;
 
 	/** The environment that the simulation pane will be put in. */
 	private Environment environment;
