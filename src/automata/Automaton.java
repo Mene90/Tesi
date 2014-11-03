@@ -974,7 +974,7 @@ public class Automaton implements Serializable, Cloneable {
 	/**
 	 * Reset all non-transient data structures.
 	 */
-    protected void clear(){
+    public void clear(){
     	
     	
     	

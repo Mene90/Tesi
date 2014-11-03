@@ -123,6 +123,9 @@ public class MenuBarCreator {
 		if(AutomatonToGraphAction.isApplicable(object))
 			addItem(menu, new AutomatonToGraphAction(
 					(automata.fsa.FiniteStateAutomaton) object, environment));
+		if (DFAToAbstractAutomatonAction.isApplicable(object))
+			addItem(menu, new DFAToAbstractAutomatonAction(
+					(automata.fsa.FiniteStateAutomaton) object, environment));
 			
 		return menu;
 	}
