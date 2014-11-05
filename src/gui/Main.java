@@ -21,6 +21,7 @@ public class Main {
 	 */
 	private static void createWindow(Serializable object) {
 		FrameFactory.createFrame(object);
+		System.out.println("bo");
 	}
 	
 

@@ -52,7 +52,7 @@ public class AutomatonToGraphAction extends FSAAction {
 			return;
 		}
 
-		AbstractAutomatonPane convert = new AbstractAutomatonPane(
+		GraphPane convert = new GraphPane(
 				(FiniteStateAutomaton) automaton.clone(), environment);
 		environment.add(convert, "DFA to Abstract Automaton", new CriticalTag() {
 		});

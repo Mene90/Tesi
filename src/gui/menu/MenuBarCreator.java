@@ -50,9 +50,6 @@ public class MenuBarCreator {
 		JMenuBar bar = new JMenuBar();
 		JMenu menu;
 		
-		menu = getInputMenu(frame);
-		if (menu.getItemCount() > 0)
-			bar.add(menu);
 
 		menu = getConvertMenu(frame);
 		if (menu.getItemCount() > 0)
@@ -79,32 +76,6 @@ public class MenuBarCreator {
 		menu.add(item);
 	}
 
-	/**
-	 * Instantiates the menu that holds input related menu events.
-	 * 
-	 * @param frame
-	 *            the environment frame that holds the environment and object
-	 * @return an input menu
-	 */
-	private static JMenu getInputMenu(EnvironmentFrame frame) {
-		Environment environment = frame.getEnvironment();
-		JMenu menu = new JMenu("Input");
-		Serializable object = environment.getObject();
-		
-		if (NoInteractionSimulateAction.isApplicable(object))
-			addItem(menu, new NoInteractionSimulateAction((Automaton) object,
-					environment));
-		if (MultipleSimulateAction.isApplicable(object))
-			addItem(menu, new MultipleSimulateAction((Automaton) object,
-					environment));
-		if	(SubStringMatchingAction.isApplicable(object))
-			addItem(menu, new SubStringMatchingAction((Automaton) object,
-					environment));
-
-		return menu;
-	}
-
-	
 	/**
 	 * This is the menu for doing conversions.
 	 * 
