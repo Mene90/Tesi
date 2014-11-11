@@ -1,0 +1,1 @@
+Compilare a partire dal file Main.java nel package gui
