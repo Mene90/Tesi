@@ -48,7 +48,7 @@ import gui.environment.tag.Tag;
  */
 public class CloseButton extends javax.swing.JButton 
 {
-    /**
+	 /**
      * The environment to handle closing tabs for.
      */
     private Environment env;
@@ -79,7 +79,7 @@ public class CloseButton extends javax.swing.JButton
                     boolean editor = false;
                     Automaton inside = null;
                     State block = null;
-                   
+                                      
                     env.remove(env.getActive());
                     if(editor) 
                     {
@@ -111,6 +111,7 @@ public class CloseButton extends javax.swing.JButton
     {
         Tag tag = env.getTag(env.getActive());
 //        setEnabled(!(tag instanceof PermanentTag));
+        System.out.println("E': \n");
         if(env.tabbed.getTabCount() == 1)
             setEnabled(false);
         else 

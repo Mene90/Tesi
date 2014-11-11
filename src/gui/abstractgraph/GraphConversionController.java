@@ -17,7 +17,6 @@ public class GraphConversionController {
 		this.view = view;
 		converter = new DFAtoAG();
 		converter.createAbstractGraph(dfa,graph);
-		//graph.getInitialState().setPoint(new Point(50, 50));
 		
 		
 	}

@@ -10,6 +10,7 @@ package gui.environment;
 import gui.action.MultipleSimulateAction.MultiplePane;
 import gui.environment.tag.EditorTag;
 import gui.environment.tag.Tag;
+
 import java.awt.*;
 import java.io.Serializable;
 import java.util.*;
@@ -194,6 +195,27 @@ public abstract class Environment extends JPanel {
 		Iterator it = (new HashSet(changeListeners)).iterator();
 		while (it.hasNext())
 			((ChangeListener) it.next()).stateChanged(e);
+	}
+	
+	/**
+	 * Removes a component from this environment.
+	 * 
+	 * @param component
+	 *            the component to remove
+	 */
+	public void remove(Component component) {
+		tabbed.remove(component);
+		Tag tag = (Tag) componentTags.remove(component);
+
+		// Takes care of the deactivation of EditorTag tagged
+		// components in the event that such action is appropriate.
+		if (tag instanceof gui.environment.tag.CriticalTag) {
+			criticalObjects--;
+			if (criticalObjects == 0)
+				setEnabledEditorTagged(true);
+		}
+
+		distributeChangeEvent();
 	}
 
 	/**
